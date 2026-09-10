@@ -1,29 +1,27 @@
-<script setup lang="ts">
+<script setup>
+import { useI18n } from 'vue-i18n'
 
-import { useI18n } from "vue-i18n";
+const { t } = useI18n()
 
-const { t } = useI18n();
-
-
-defineProps<{
-    action: Function,
-    canNext?: boolean
-}>();
-
+defineProps({
+  action: {
+    type: Function,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
 </script>
 
-
 <template>
-
-<button
+  <button
     type="button"
-    @click.prevent="action"
     class="btn btn-primary btn-rounded"
-    :disabled="canNext"
->
-
-    {{ t("Next") }}
-
-</button>
-
+    :disabled="disabled"
+    @click.prevent="action"
+  >
+    {{ t('Next') }}
+  </button>
 </template>

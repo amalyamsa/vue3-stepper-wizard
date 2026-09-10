@@ -1,30 +1,25 @@
-<script setup lang="ts">
+<script setup>
+import { inject } from 'vue'
 
-import { inject } from "vue";
+defineProps({
+  title: {
+    type: String,
+    required: true,
+  },
+  canNext: {
+    type: Boolean,
+    default: true,
+  },
+})
 
-
-const props = defineProps<{
-    title: string
-    canNext?: boolean
-}>()
-
-
-// optional: access wizard state
-const stepper = inject("stepper");
-
-
+const stepper = inject('stepper', null)
 </script>
 
-
 <template>
-
-<div
+  <div
     class="step"
-    :data-title="props.title"
->
-
+    :data-title="title"
+  >
     <slot />
-
-</div>
-
+  </div>
 </template>

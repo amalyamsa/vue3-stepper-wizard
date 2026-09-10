@@ -1,142 +1,138 @@
-<script setup lang="ts">
-import { StepperHeader, StepperWizard, Step, StepPrevious, StepConfirm, StepNext } from "@/components";
+<script setup>
 import {
-    computed,
-    ref,
-    useSlots,
-    provide
-} from "vue";
+  computed,
+  provide,
+  useSlots,
+} from 'vue'
 
-import { useI18n } from "vue-i18n";
+import StepPrevious from './StepPrevious.vue'
+import StepNext from './StepNext.vue'
+import StepConfirm from './StepConfirm.vue'
 
-const { t } = useI18n();
+import { useStepperForm } from '../composables/useStepperForm'
 
+const props = defineProps({
+  validate: {
+    type: Function,
+    default: null,
+  },
+})
 
 const emit = defineEmits([
-    "finish",
-    "change"
-]);
+  'finish',
+  'change',
+])
 
-
-const slots = useSlots();
-
-
-const currentStep = ref(0);
-
+const slots = useSlots()
 
 const steps = computed(() => {
-    return slots.default?.() ?? [];
-});
+  const content = slots.default?.() || []
 
+  return content.filter((vnode) => {
+    return vnode.type !== Symbol.for('v-fgt')
+  })
+})
 
-const step = computed(()=>{
-    return currentStep.value + 1;
-});
+const totalSteps = computed(() => {
+  return steps.value.length
+})
 
+const {
+  step,
+  isFirstStep,
+  isLastStep,
+  next: goNext,
+  previous,
+  goTo,
+  reset,
+  progress,
+} = useStepperForm(totalSteps)
 
+async function next() {
+  // Validation is optional
+  if (props.validate) {
+    const result = await props.validate()
 
-async function next(validate?:Function) {
-
-
-    if(validate){
-
-        const result = await validate();
-
-        if(!result.valid)
-            return;
-
+    if (!result?.valid) {
+      return
     }
+  }
 
+  // Last step
+  if (isLastStep.value) {
+    emit('finish')
+    return
+  }
 
+  // Move to next step
+  goNext()
 
-    if(currentStep.value < steps.value.length - 1){
-
-        currentStep.value++;
-
-        emit(
-            "change",
-            currentStep.value
-        );
-
-    }
-    else{
-
-        emit("finish");
-
-    }
-
+  emit('change', step.value)
 }
 
+function prev() {
+  previous()
 
-
-function previous(){
-
-    if(currentStep.value > 0){
-
-        currentStep.value--;
-
-    }
-
+  emit('change', step.value)
 }
 
+function confirm() {
+  next()
+}
 
+provide('stepper', {
+  step,
 
-provide(
-    "stepper",
-    {
-        currentStep,
-        step,
-        next,
-        previous
-    }
-);
-const canNext = computed(()=>{
-    return currentStep.value < steps.value.length - 1;
-});
+  currentStep: computed(() => {
+    return step.value - 1
+  }),
 
+  totalSteps,
+
+  isFirstStep,
+  isLastStep,
+
+  progress,
+
+  next,
+  previous: prev,
+  goTo,
+  reset,
+})
 </script>
 
-
 <template>
+  <div class="stepper-wizard">
 
-<div>
+    <!-- Current step -->
+    <div class="wizard-content">
 
+      <component
+        :is="steps[step - 1]"
+        v-if="steps.length"
+      />
 
-<div class="wizard-content">
+    </div>
 
-    <component
-        :is="steps[currentStep]"
-    />
+    <!-- Navigation -->
+    <div class="d-flex justify-content-between mt-4">
 
-</div>
+      <StepPrevious
+        v-if="!isFirstStep"
+        :action="prev"
+      />
 
+      <StepNext
+        v-if="!isLastStep"
+        :action="next"
+      />
 
+      <StepConfirm
+        v-if="isLastStep"
+        :action="confirm"
+      />
 
-<div class="d-flex justify-content-between mt-4">
+    </div>
 
-
-    <StepPrevious
-        v-if="currentStep > 0"
-        :action="previous"
-    />
-
-
-
-    <StepNext
-        v-if="currentStep < steps.length-1"
-        :action="next" :disabled="!canNext"
-    />
-
-
-
-    <StepConfirm
-        v-if="currentStep === steps.length-1"
-    />
-
-
-</div>
-
-
-</div>
-
+  </div>
 </template>

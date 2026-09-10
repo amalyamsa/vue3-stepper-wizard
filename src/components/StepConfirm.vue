@@ -1,22 +1,27 @@
 <script setup>
-import { useI18n } from "vue-i18n";
+import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n();
-const props = defineProps({
-    step: {
-        type: Number,
-        required: true
-    },
-    action: {
-        type: Function,
-        required: true
-    }
+const { t } = useI18n()
 
-});
+defineProps({
+  action: {
+    type: Function,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
 </script>
+
 <template>
-    <button :step="step" @click.prevent="props.action" class="btn btn-primary btn-rounded" type="button">
-        <!-- <span v-if="loading" class="spinner-border spinner-border-sm mr-1"></span> -->
-        {{ t("Confirm") }}
-    </button>
+  <button
+    type="button"
+    class="btn btn-primary btn-rounded"
+    :disabled="disabled"
+    @click.prevent="action"
+  >
+    {{ t('Confirm') }}
+  </button>
 </template>
