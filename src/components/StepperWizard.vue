@@ -2,7 +2,7 @@
 import {
   computed,
   provide,
-  useSlots,
+  ref,
 } from 'vue'
 
 import StepPrevious from './StepPrevious.vue'
@@ -17,6 +17,7 @@ const props = defineProps({
     type: Function,
     default: null,
   },
+
   headerTitle: {
     type: Array,
     default: () => [],
@@ -33,19 +34,41 @@ const emit = defineEmits([
   'change',
 ])
 
-const slots = useSlots()
+/*
+|--------------------------------------------------------------------------
+| Registered steps
+|--------------------------------------------------------------------------
+*/
 
-const steps = computed(() => {
-  const content = slots.default?.() || []
+const registeredSteps = ref([])
 
-  return content.filter((vnode) => {
-    return vnode.type !== Symbol.for('v-fgt')
+function registerStep(stepData) {
+  const index = registeredSteps.value.length
+
+  registeredSteps.value.push({
+    index,
+    title: stepData.title,
+    validate: stepData.validate,
   })
-})
+
+  return index
+}
+
+function unregisterStep(index) {
+  registeredSteps.value = registeredSteps.value.filter(
+    item => item.index !== index
+  )
+}
 
 const totalSteps = computed(() => {
-  return steps.value.length
+  return registeredSteps.value.length
 })
+
+/*
+|--------------------------------------------------------------------------
+| Stepper
+|--------------------------------------------------------------------------
+*/
 
 const {
   step,
@@ -58,27 +81,129 @@ const {
   progress,
 } = useStepperForm(totalSteps)
 
-async function next() {
-  // Validation is optional
+/*
+|--------------------------------------------------------------------------
+| Validation
+|--------------------------------------------------------------------------
+*/
+
+async function validateCurrentStep() {
+  const currentStep = registeredSteps.value.find(
+    item => item.index === step.value - 1
+  )
+
+  console.log(
+    '[StepPerform] Current step:',
+    step.value
+  )
+
+  console.log(
+    '[StepPerform] Registered step:',
+    currentStep
+  )
+
+  /*
+   * Step-specific validation
+   */
+  if (currentStep?.validate) {
+    const result = await currentStep.validate()
+
+    console.log(
+      '[StepPerform] Validation result:',
+      result
+    )
+
+    /*
+     * Boolean validator
+     */
+    if (typeof result === 'boolean') {
+      return result
+    }
+
+    /*
+     * VeeValidate-style result:
+     *
+     * {
+     *   valid: true/false,
+     *   errors: {}
+     * }
+     */
+    if (
+      result &&
+      typeof result === 'object' &&
+      'valid' in result
+    ) {
+      return result.valid === true
+    }
+
+    /*
+     * Unknown result = valid
+     */
+    return true
+  }
+
+  /*
+   * Optional global validator
+   */
   if (props.validate) {
     const result = await props.validate()
 
-    if (!result?.valid) {
-      return
+    console.log(
+      '[StepPerform] Global validation result:',
+      result
+    )
+
+    if (typeof result === 'boolean') {
+      return result
     }
+
+    if (
+      result &&
+      typeof result === 'object' &&
+      'valid' in result
+    ) {
+      return result.valid === true
+    }
+
+    return true
   }
 
-  // Last step
+  return true
+}
+
+/*
+|--------------------------------------------------------------------------
+| Next
+|--------------------------------------------------------------------------
+*/
+
+async function next() {
+  const valid = await validateCurrentStep()
+
+  console.log(
+    '[StepPerform] Can continue:',
+    valid
+  )
+
+  if (!valid) {
+    return
+  }
+
   if (isLastStep.value) {
     emit('finish')
     return
   }
 
-  // Move to next step
   goNext()
 
   emit('change', step.value)
 }
+
+/*
+|--------------------------------------------------------------------------
+| Previous
+|--------------------------------------------------------------------------
+*/
 
 function prev() {
   previous()
@@ -86,9 +211,21 @@ function prev() {
   emit('change', step.value)
 }
 
+/*
+|--------------------------------------------------------------------------
+| Confirm
+|--------------------------------------------------------------------------
+*/
+
 function confirm() {
   next()
 }
+
+/*
+|--------------------------------------------------------------------------
+| Provide
+|--------------------------------------------------------------------------
+*/
 
 provide('stepper', {
   step,
@@ -104,6 +241,9 @@ provide('stepper', {
 
   progress,
 
+  registerStep,
+  unregisterStep,
+
   next,
   previous: prev,
   goTo,
@@ -114,26 +254,41 @@ provide('stepper', {
 <template>
   <div class="stepper-wizard">
 
-    <div class="row justify-content-center mb-4" v-if="showHeader && headerTitle.length">
-
-      <StepperHeader :step="step" :header_title="headerTitle" />
-
+    <!-- Header -->
+    <div
+      v-if="showHeader && headerTitle.length"
+      class="row justify-content-center mb-4"
+    >
+      <StepperHeader
+        :step="step"
+        :header_title="headerTitle"
+      />
     </div>
-    <!-- Current step -->
+
+    <!-- Steps -->
     <div class="wizard-content">
 
-      <component :is="steps[step - 1]" v-if="steps.length" />
+      <slot />
 
     </div>
 
     <!-- Navigation -->
     <div class="d-flex justify-content-between mt-4">
 
-      <StepPrevious v-if="!isFirstStep" :action="prev" />
+      <StepPrevious
+        v-if="!isFirstStep"
+        :action="prev"
+      />
 
-      <StepNext v-if="!isLastStep" :action="next" />
+      <StepNext
+        v-if="!isLastStep"
+        :action="next"
+      />
 
-      <StepConfirm v-if="isLastStep" :action="confirm" />
+      <StepConfirm
+        v-if="isLastStep"
+        :action="confirm"
+      />
 
     </div>
 

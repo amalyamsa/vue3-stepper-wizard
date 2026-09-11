@@ -1,10 +1,16 @@
 {
-  "name": "vue3-stepper-wizard",
-  "version": "0.0.0",
-  "private": true,
-  "description": "stepper form",
+  "name": "stepperform",
+  "version": "1.0.0",
+  "description": "A reusable Vue 3 stepper wizard for multi-step forms.",
   "keywords": [
-    "stepper-wizard"
+    "vue",
+    "vue3",
+    "stepper",
+    "stepper-form",
+    "stepper-wizard",
+    "multi-step-form",
+    "wizard-form",
+    "form-wizard"
   ],
   "homepage": "https://github.com/amalyamsa/vue3-stepper-wizard#readme",
   "bugs": {
@@ -14,34 +20,41 @@
     "type": "git",
     "url": "git+https://github.com/amalyamsa/vue3-stepper-wizard.git"
   },
-  "license": "ISC",
+  "license": "MIT",
   "author": "malaly",
+
   "type": "module",
-  "main": "index.js",
+
+  "main": "./dist/stepperform.umd.cjs",
+  "module": "./dist/stepperform.js",
+
+  "exports": {
+    ".": {
+      "import": "./dist/stepperform.js",
+      "require": "./dist/stepperform.umd.cjs"
+    },
+    "./style.css": "./dist/stepperform.css"
+  },
+
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "@vee-validate/yup": "^4.15.1",
-    "bootstrap": "^5.3.8",
-    "vee-validate": "^4.15.1",
-    "vue": "^3.5.40",
-    "vue-i18n": "^11.4.8",
-    "yup": "^1.7.1"
+
+  "peerDependencies": {
+    "vue": "^3.3.0"
   },
+
   "devDependencies": {
-    "@types/node": "^24.13.3",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vitest/ui": "^4.1.10",
-    "@vue/test-utils": "^2.4.11",
-    "@vue/tsconfig": "^0.9.1",
-    "jsdom": "^29.1.1",
-    "typescript": "~6.0.2",
-    "vite": "^8.2.0",
-    "vite-plugin-dts": "^5.0.3",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.8"
+    "vite": "^8.3.0",
+    "vue": "^3.5.40"
   }
 }

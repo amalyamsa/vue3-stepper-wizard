@@ -3,7 +3,7 @@ import { reactive, inject } from 'vue'
 import {
   StepperWizard,
   Step,
-} from '@/components'
+} from '../components'
 
 import {
   Step1,

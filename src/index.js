@@ -1,12 +1,14 @@
 
-import StepperHeader from '@/components/StepperHeader.vue'
-import StepperWizard from '@/components/StepperWizard.vue'
-import Step from '@/components/Step.vue'
-import StepPrevious from '@/components/StepPrevious.vue'
-import StepNext from '@/components/StepNext.vue'
-import StepConfirm from '@/components/StepConfirm.vue'
+import StepperHeader from './components/StepperHeader.vue'
+import StepperWizard from './components/StepperWizard.vue'
+import Step from './components/Step.vue'
+import StepPrevious from './components/StepPrevious.vue'
+import StepNext from './components/StepNext.vue'
+import StepConfirm from './components/StepConfirm.vue'
 
-import { useStepperForm } from '@/composables/useStepperForm'
+import './assets/styles/stepperform.css'
+
+import { useStepperForm } from './composables/useStepperForm'
 
 export {
   StepperHeader,

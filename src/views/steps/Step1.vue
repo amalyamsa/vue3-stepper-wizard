@@ -1,7 +1,7 @@
 <script setup>
 import {  reactive } from "vue";
 import { Field, ErrorMessage } from "vee-validate";
-import { useFormValidation } from "@/composables/form_validator/useFormValidator";
+import { useFormValidation } from "../../composables/form_validator/useFormValidator";
 
 const details = reactive({
   first_name:'',
