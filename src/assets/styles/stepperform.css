@@ -5,9 +5,9 @@
 :root {
   --smoke-color3: #9aaece30;
   --bg-footer: #0d1726;
-  --theme-color: #2e6da7;
-  --primary-color: #1CA8CB;
-  --title-color: #2e6da7;
+  --theme-color: #053b08;
+  --primary-color: rgba(28, 168, 203, 0.548);
+  --title-color: #053b08;
   --body-color: #6E7070;
   --smoke-color: #9aaece0d;
   --smoke-color2: #F3F4F6;
@@ -51,6 +51,7 @@ body {
   color: var(--body-color);
   line-height: 26px;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--smoke-color);
 }
 
 
@@ -98,12 +99,7 @@ p {
   line-height: 1.75;
 }
 
-h1 a,
-h2 a,
-h3 a,
-h4 a,
 h5 a,
-h6 a,
 p a,
 span a {
   font-size: inherit;
@@ -112,65 +108,15 @@ span a {
   line-height: inherit;
 }
 
-.h1,
-h1,
-.h2,
-h2,
-.h3,
-h3,
-.h4,
-h4,
 .h5,
-h5,
-.h6,
-h6 {
+h5 {
   font-family: var(--title-font);
   color: var(--title-color);
   text-transform: none;
   font-weight: 700;
-  line-height: 1.4;
   margin: 0 0 15px 0;
-}
-
-.h1,
-h1 {
-  font-size: 80px;
-  line-height: 1.18;
-}
-
-.h2,
-h2 {
-  font-size: 48px;
-  line-height: 1.327;
-}
-
-.h3,
-h3 {
-  font-size: 32px;
-  line-height: 1.278;
-}
-
-.h4,
-h4 {
-  font-size: 30px;
-  line-height: 1.333;
-}
-
-.h5,
-h5 {
   font-size: 24px;
   line-height: 1.417;
-}
-
-.h6,
-h6 {
-  font-size: 20px;
-  line-height: 1.5;
-}
-
-.space,
-.space-top {
-  padding-top: var(--section-space);
 }
 
 .space,
@@ -179,272 +125,105 @@ h6 {
 }
 
 /*------------------- 2.2. Grid -------------------*/
-.slick-track>[class*=col] {
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  width: 100%;
-  max-width: 100%;
-  padding-right: calc(var(--bs-gutter-x)/ 2);
-  padding-left: calc(var(--bs-gutter-x)/ 2);
-  margin-top: var(--bs-gutter-y);
+
+.stepper-track {
+  justify-content: center; /* default: centered on xs/sm */
+  overflow-x: visible; /* no scrollbar now that it fits */
+  scrollbar-width: thin;
 }
 
-/*------------------- 3.2. Buttons -------------------*/
-.th-btn {
+@media (min-width: 768px) {
+  .stepper-track {
+    justify-content: space-between;
+  }
+}
+
+/* Each step item is inline (no wrapping), spaced with gap from parent. */
+.step-item {
   position: relative;
-  z-index: 2;
-  overflow: hidden;
-  vertical-align: middle;
-  text-align: center;
-  background-color: var(--theme-color);
-  color: var(--white-color);
-  font-family: var(--body-font);
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  -ms-flex-align: center;
-  align-items: center;
-  text-transform: capitalize;
-  border: none;
-  font-size: 16px;
-  font-weight: 400;
-  padding: 18.8px 35px;
-  border-radius: 48px;
-  -webkit-transition: all 0.3s 0s ease-out;
-  transition: all 0.3s 0s ease-out;
-  gap: 8px;
+  flex: 0 0 auto; /* prevent wrapping into a new line on small screens */
 }
 
-.th-btn.th-icon:after {
-  content: '';
+/* On medium and up, distribute space more evenly */
+@media (min-width: 768px) {
+  .stepper-track {
+    justify-content: space-between;
+  }
+  .step-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* Circle sizes */
+.step-dot {
   position: relative;
-  -webkit-mask-image: url('/imgs/icon/arrow-right.svg');
-  mask-image: url('/imgs/icon/arrow-right.svg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: auto;
-  mask-size: auto;
-  background-color: var(--white-color);
-  width: 24px;
-  height: 24px;
-  display: block;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  font-size: 0.95rem;
+  z-index: 2; /* above the connector */
+  background-color: #fff; /* mask the line under all states */
+}
+@media (max-width: 575.98px) {
+  .step-dot {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 0.9rem;
+  }
 }
 
-.th-btn:before {
+/* states */
+.step-item.completed .step-dot {
+  background-color: #fff;
+  color: #4fa633;
+  border: 2px solid #4fa633;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+.step-item.current .step-dot {
+  background-color: var(--title-color);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgb(118 241 105 / 18%);
+}
+.step-item.upcoming .step-dot {
+  background-color: #f8faf9;
+  color: #6c757d;
+  border: 1px solid #f8faf9;
+}
+/* --- Connectors (line between circles) --- */
+.step-item::after {
   content: '';
-  width: 0;
-  height: 100%;
-  border-radius: 30em;
   position: absolute;
-  top: 0;
-  left: -5%;
-   /* background-color: var(--title-color); */
-  -webkit-transition: .5s ease;
-  transition: .5s ease;
-  display: block;
-  z-index: -1;
+  z-index: 0; /* behind the dot */
+  top: 20px; /* center for 40px dot */
+  left: calc(50% + 25px);
+  width: calc(100% - 40px);
+  border-top: 2px dashed #dee2e6;
 }
 
-.th-btn:hover,
-.th-btn.active {
-  color: var(--white-color);
-  box-shadow: none;
+/* On small screens (tight spacing), make connector span the gap */
+@media (max-width: 767.98px) {
+  .step-item::after {
+    top: 15px; /* center for 30px dot */
+    left: calc(50% + 15px); /* start at dot edge */
+    width: 28px; /* bridge the small gap */
+  }
 }
 
-.th-btn:hover.th-icon i,
-.th-btn.active.th-icon i {
-  -webkit-transform: rotate(0deg);
-  -ms-transform: rotate(0deg);
-  transform: rotate(0deg);
+/* No connector after the last step */
+.step-item:last-child::after {
+  content: none;
 }
 
-.th-btn:hover:before,
-.th-btn.active:before {
-  width: 110%;
+/* Completed steps get a solid green connector forward */
+.step-item.completed::after {
+  border-top-style: dashed;
+  border-top-color: #4fa633;
 }
 
-.th-btn.style1:before,
-.th-btn.style1:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style1:hover {
-  color: var(--title-color);
-}
-
-.th-btn.style1:hover.th-icon:after {
-  background-color: var(--title-color);
-}
-
-.th-btn.style1:hover:before,
-.th-btn.style1:hover:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style2 {
-  background-color: transparent;
-  color: var(--white-color);
-  border: 1px solid var(--white-color);
-}
-
-.th-btn.style2:hover {
-  color: var(--black-color2);
-  border: 1px solid var(--white-color);
-}
-
-.th-btn.style2:hover:after {
-  background-color: var(--title-color);
-}
-
-.th-btn.style2:before {
-  background-color: var(--white-color);
-}
-
-.th-btn.style3 {
-  background-color: var(--title-color);
-  color: var(--white-color);
-  box-shadow: none;
-  border: none;
-}
-
-.th-btn.style3:before {
-  background-color: var(--theme-color);
-}
-
-.th-btn.style4 {
-  background-color: transparent;
-  color: var(--title-color);
-  border: 1px solid var(--title-color);
-  padding: 14px 25px;
-}
-
-.th-btn.style4.th-icon:after {
-  background-color: var(--title-color);
-}
-
-.th-btn.style4:hover {
-  color: var(--white-color);
-  border: 1px solid var(--theme-color);
-}
-
-.th-btn.style4:hover.th-icon:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style4:before {
-  background-color: var(--theme-color);
-}
-
-.th-btn.style5 {
-  background-color: var(--title-color);
-  color: var(--white-color);
-  box-shadow: none;
-  border: none;
-}
-
-.th-btn.style5:before {
-  background-color: var(--white-color);
-}
-
-.th-btn.style5:hover {
-  color: var(--title-color);
-}
-
-.th-btn.style6 {
-  background-color: var(--smoke-color);
-  color: var(--title-color);
-  box-shadow: none;
-  border: none;
-}
-
-.th-btn.style6:before {
-  background-color: var(--theme-color);
-}
-
-.th-btn.style6:after {
-  background-color: var(--title-color);
-}
-
-.th-btn.style6:hover {
-  color: var(--white-color);
-}
-
-.th-btn.style6:hover:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style7:before,
-.th-btn.style7:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style7:hover {
-  color: var(--title-color);
-}
-
-.th-btn.style7:hover:before,
-.th-btn.style7:hover:after {
-  background-color: var(--white-color);
-}
-
-.th-btn.style7:hover:after {
-  background-color: var(--title-color);
-}
-
-.th-btn.white-btn {
-  background-color: var(--white-color);
-  color: var(--black-color2);
-}
-
-.th-btn.th-radius {
-  border-radius: 0;
-}
-
-.th-btn.th-radius2 {
-  border-radius: 8px;
-}
-
-.th-btn.btn-fw {
-  width: 100%;
-  padding: 18px 30px;
-}
-
-/* Target the inner input generated by vue-datepicker-next */
-:deep(.mx-input) {
-  width: 100% !important;
-  height: 37px !important;
-  padding: 0.375rem 0.75rem !important;
-  font-size: 1rem !important;
-  line-height: 1.5 !important;
-  color: #151616 !important;
-  background-color: #fff !important;
-  background-clip: padding-box !important;
-  border: 1px solid #ddd !important;
-  border-radius: 0.375rem !important;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
-  box-shadow: inset 0 1px 0px rgba(0, 0, 0, 0.001) !important;
-}
-
-:deep(.mx-input:focus) {
-  color: #151616 !important;
-  background-color: #fff !important;
-  border-color: #86b7fe !important;
-  outline: 0 !important;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+/* Connector after the current step stays dashed gray (indicating upcoming) */
+.step-item.current::after {
+  border-top-style: dashed;
+  border-top-color: #dee2e6;
 }

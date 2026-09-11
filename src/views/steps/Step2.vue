@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref,reactive, watch, watchEffect } from "vue";
+import { reactive} from "vue";
 import { Field, ErrorMessage } from "vee-validate";
 import { useFormValidation } from "@/composables/form_validator/useFormValidator";
 
@@ -11,28 +11,29 @@ const details = reactive({
 const {
   phoneRules,
   emailRules,
-} = useFormValidation(details.value);
+} = useFormValidation(details);
 
 </script>
 
 <template>
-  <h5 class="mb-3">2: Step2</h5>
+  <h5 class="mb-3">2: Step2 Information</h5>
 
   <!-- Full Name -->
   <div class="row g-3">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-6">
       <label class="form-label">Phone Number</label>
       <Field
         name="phone_number"
-        type="text"
+        type="tel"
         class="form-control large-input"
         v-model="details.phone_number"
-        placeholder="Enter Name"
+        maxlength="10"
+        placeholder="Enter Phone Number"
         :rules="phoneRules"
       />
       <ErrorMessage name="phone_number" class="text-danger small" />
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-6">
       <label class="form-label">Email Address</label>
       <Field
         name="email"

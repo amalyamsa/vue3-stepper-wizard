@@ -1,7 +1,6 @@
 <script setup>
 import { reactive, inject } from 'vue'
 import {
-  StepperHeader,
   StepperWizard,
   Step,
 } from '@/components'
@@ -13,9 +12,6 @@ import {
 } from '@/views/steps'
 
 import { Form } from 'vee-validate'
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 const headerTitle = reactive([
   'Step1',
@@ -35,7 +31,8 @@ async function submitBooking() {
 <template>
   <section class="space-bottom section mb-5" style="padding-top: 60px;">
     <div class="container">
-      <div class="row justify-content-center">        
+     
+      <div class="row justify-content-center">
 
         <div class="col-12">
           <div class="styled-card shadow-sm rounded position-relative p-4">

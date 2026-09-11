@@ -20,7 +20,7 @@ export function useFormValidation(piniaData) {
 
     const tzPhoneRegex = /^0(61|62|63|64|65|66|67|68|69|60|71|72|73|74|75|76|77|78|79|70)\d{7}$/;
 
-    return tzPhoneRegex.test(value) ? true : "Enter a valid Tanzania phone number";
+    return tzPhoneRegex.test(value) ? true : "Enter a valid phone number";
   });
 
   defineRule("email", value => {

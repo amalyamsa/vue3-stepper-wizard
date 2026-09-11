@@ -28,7 +28,6 @@ defineProps({
 #next-btn {
   border: 1px solid var(--title-color);
   color: white;
-  border-radius: 20px;
   padding: 4px 16px;
   background-color: var(--title-color);
 }

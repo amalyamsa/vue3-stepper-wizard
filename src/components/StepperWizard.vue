@@ -8,6 +8,7 @@ import {
 import StepPrevious from './StepPrevious.vue'
 import StepNext from './StepNext.vue'
 import StepConfirm from './StepConfirm.vue'
+import StepperHeader from './StepperHeader.vue'
 
 import { useStepperForm } from '../composables/useStepperForm'
 
@@ -15,6 +16,15 @@ const props = defineProps({
   validate: {
     type: Function,
     default: null,
+  },
+  headerTitle: {
+    type: Array,
+    default: () => [],
+  },
+
+  showHeader: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -104,33 +114,26 @@ provide('stepper', {
 <template>
   <div class="stepper-wizard">
 
+    <div class="row justify-content-center mb-4" v-if="showHeader && headerTitle.length">
+
+      <StepperHeader :step="step" :header_title="headerTitle" />
+
+    </div>
     <!-- Current step -->
     <div class="wizard-content">
 
-      <component
-        :is="steps[step - 1]"
-        v-if="steps.length"
-      />
+      <component :is="steps[step - 1]" v-if="steps.length" />
 
     </div>
 
     <!-- Navigation -->
     <div class="d-flex justify-content-between mt-4">
 
-      <StepPrevious
-        v-if="!isFirstStep"
-        :action="prev"
-      />
+      <StepPrevious v-if="!isFirstStep" :action="prev" />
 
-      <StepNext
-        v-if="!isLastStep"
-        :action="next"
-      />
+      <StepNext v-if="!isLastStep" :action="next" />
 
-      <StepConfirm
-        v-if="isLastStep"
-        :action="confirm"
-      />
+      <StepConfirm v-if="isLastStep" :action="confirm" />
 
     </div>
 

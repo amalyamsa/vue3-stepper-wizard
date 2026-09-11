@@ -20,7 +20,6 @@ export {
 
 export default {
   install(app) {
-    app.component('StepperForm', StepperForm)
     app.component('StepperHeader', StepperHeader)
     app.component('StepperWizard', StepperWizard)
     app.component('Step', Step)

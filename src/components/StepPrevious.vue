@@ -18,7 +18,6 @@ const props = defineProps({
 #back-btn {
   border: 1px solid var(--title-color);
   color: var(--title-color);
-  border-radius: 20px;
   padding: 4px 16px;
   background-color: white;
 }

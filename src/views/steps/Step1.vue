@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, watch, watchEffect } from "vue";
+import {  reactive } from "vue";
 import { Field, ErrorMessage } from "vee-validate";
 import { useFormValidation } from "@/composables/form_validator/useFormValidator";
 
@@ -12,12 +12,12 @@ const {
   firstNameRules,
   middleNameRules,
   lastNameRules,
-} = useFormValidation(details?.value);
+} = useFormValidation(details);
 
 </script>
 
 <template>
-  <h5 class="mb-3">1: Step1</h5>
+  <h5 class="mb-3">1: Step1 Information</h5>
 
   <!-- Full Name -->
   <div class="row g-3 mb-2">
