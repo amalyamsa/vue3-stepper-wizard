@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
-import './style.css'
+import './assets/styles/stepperform.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.vue'
 import { createI18n } from 'vue-i18n'
 

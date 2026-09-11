@@ -1,7 +1,4 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 defineProps({
   action: {
@@ -22,6 +19,6 @@ defineProps({
     :disabled="disabled"
     @click.prevent="action"
   >
-    {{ t('Confirm') }}
+    Confirm
   </button>
 </template>

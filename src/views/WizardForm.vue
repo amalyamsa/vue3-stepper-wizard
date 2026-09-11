@@ -33,13 +33,12 @@ async function submitBooking() {
 </script>
 
 <template>
-  <section class="styled-form-section section mb-5">
+  <section class="space-bottom section mb-5" style="padding-top: 60px;">
     <div class="container">
-      <div class="row justify-content-center">
-        
+      <div class="row justify-content-center">        
 
         <div class="col-12">
-          <div class="styled-card shadow-sm rounded position-relative">
+          <div class="styled-card shadow-sm rounded position-relative p-4">
             <i class="las la-user-md bg-icon"></i>
 
             <Form v-slot="{ validate }">
@@ -64,3 +63,15 @@ async function submitBooking() {
     </div>
   </section>
 </template>
+
+<style scoped>
+.styled-card {
+  position: relative;
+  background: #fff;
+}
+
+.accept-state {
+  border: 1px solid var(--theme-color) !important;
+  background-color: var(--theme-color) !important;
+}
+</style>

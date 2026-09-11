@@ -1,7 +1,4 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 defineProps({
   action: {
@@ -18,10 +15,27 @@ defineProps({
 <template>
   <button
     type="button"
+    id="next-btn"
     class="btn btn-primary btn-rounded"
     :disabled="disabled"
     @click.prevent="action"
   >
-    {{ t('Next') }}
+    Next
   </button>
 </template>
+<style>
+
+#next-btn {
+  border: 1px solid var(--title-color);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 16px;
+  background-color: var(--title-color);
+}
+
+#next-btn:disabled {
+  background-color: #d1d5db;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+</style>

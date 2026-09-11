@@ -6,7 +6,6 @@ import StepPrevious from '@/components/StepPrevious.vue'
 import StepNext from '@/components/StepNext.vue'
 import StepConfirm from '@/components/StepConfirm.vue'
 
-import '/assets/styles/stepperform.css'
 import { useStepperForm } from '@/composables/useStepperForm'
 
 export {
