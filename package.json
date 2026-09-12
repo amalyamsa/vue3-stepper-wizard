@@ -22,12 +22,9 @@
   },
   "license": "MIT",
   "author": "malaly",
-
   "type": "module",
-
   "main": "./dist/stepperform.umd.cjs",
   "module": "./dist/stepperform.js",
-
   "exports": {
     ".": {
       "import": "./dist/stepperform.js",
@@ -35,26 +32,25 @@
     },
     "./style.css": "./dist/stepperform.css"
   },
-
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
-
   "peerDependencies": {
     "vue": "^3.3.0"
   },
-
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
     "vite": "^8.3.0",
     "vue": "^3.5.40"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8"
   }
 }

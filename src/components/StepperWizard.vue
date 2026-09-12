@@ -92,26 +92,11 @@ async function validateCurrentStep() {
     item => item.index === step.value - 1
   )
 
-  console.log(
-    '[StepPerform] Current step:',
-    step.value
-  )
-
-  console.log(
-    '[StepPerform] Registered step:',
-    currentStep
-  )
-
   /*
    * Step-specific validation
    */
   if (currentStep?.validate) {
     const result = await currentStep.validate()
-
-    console.log(
-      '[StepPerform] Validation result:',
-      result
-    )
 
     /*
      * Boolean validator
@@ -147,11 +132,6 @@ async function validateCurrentStep() {
    */
   if (props.validate) {
     const result = await props.validate()
-
-    console.log(
-      '[StepPerform] Global validation result:',
-      result
-    )
 
     if (typeof result === 'boolean') {
       return result
