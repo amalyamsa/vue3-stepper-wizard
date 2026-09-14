@@ -9,25 +9,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <button type="button" id="next-btn" class="btn btn-secondary btn-rounded" @click.prevent="props.action">
+  <button type="button" class="stepper-button stepper-button-secondary" @click.prevent="props.action">
     Previous
   </button>
 </template>
 
-<style>
-#back-btn {
-  border: 1px solid var(--title-color);
-  color: var(--title-color);
-  padding: 4px 16px;
-  background-color: white;
-}
-
-#back-btn:hover {
-  background-color: #ecfcfc;
-}
-
-#back-btn:disabled {
-  border-color: #d1d5db;
-  color: #6b7280;
-}
-</style>

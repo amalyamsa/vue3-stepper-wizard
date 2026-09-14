@@ -237,7 +237,7 @@ provide('stepper', {
     <!-- Header -->
     <div
       v-if="showHeader && headerTitle.length"
-      class="row justify-content-center mb-4"
+      class="stepper-header-wrapper"
     >
       <StepperHeader
         :step="step"
@@ -253,7 +253,7 @@ provide('stepper', {
     </div>
 
     <!-- Navigation -->
-    <div class="d-flex justify-content-between mt-4">
+    <div class="stepper-navigation">
 
       <StepPrevious
         v-if="!isFirstStep"

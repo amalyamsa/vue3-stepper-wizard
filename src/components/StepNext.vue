@@ -15,26 +15,10 @@ defineProps({
 <template>
   <button
     type="button"
-    id="next-btn"
-    class="btn btn-primary btn-rounded"
+    class="stepper-button stepper-button-primary"
     :disabled="disabled"
     @click.prevent="action"
   >
     Next
   </button>
 </template>
-<style>
-
-#next-btn {
-  border: 1px solid var(--title-color);
-  color: white;
-  padding: 4px 16px;
-  background-color: var(--title-color);
-}
-
-#next-btn:disabled {
-  background-color: #d1d5db;
-  border-color: #d1d5db;
-  color: #6b7280;
-}
-</style>

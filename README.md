@@ -1,29 +1,36 @@
 # StepPerform
 
-A lightweight and reusable **Vue 3 stepper wizard** for building multi-step forms and workflows.
+A lightweight, reusable **Vue 3 stepper wizard** for multi-step forms.
 
-StepPerform handles the **step navigation and wizard state**. Your application remains responsible for **form data and validation**.
+StepPerform handles the **step navigation, progress state, and wizard UI** while your application remains responsible for **form fields and validation**.
 
-It works with any validation approach, including:
-
-* VeeValidate
-* Yup
-* Zod
-* custom validation
-* API validation
-* no validation
+* Vue 3
+* JavaScript
+* Pure CSS
+* No Bootstrap dependency
+* No VeeValidate dependency
+* No Yup/Zod dependency
+* Supports custom synchronous and asynchronous validation
+* Per-step validation
+* VeeValidate-compatible
+* Responsive
+* Lightweight
 
 ---
 
 ## Installation
 
-Install StepPerform with npm:
+Install StepPerform from npm:
 
 ```bash
 npm install stepperform
 ```
 
-Import the components and stylesheet:
+---
+
+## Basic Usage
+
+Import the components:
 
 ```vue
 <script setup>
@@ -36,36 +43,21 @@ import 'stepperform/style.css'
 </script>
 ```
 
----
-
-# Basic Usage
-
-A simple three-step wizard looks like this:
+Then create your wizard:
 
 ```vue
-<script setup>
-import {
-  StepperWizard,
-  Step,
-} from 'stepperform'
-
-function handleFinish() {
-  console.log('Wizard completed')
-}
-</script>
-
 <template>
   <StepperWizard
     :header-title="[
-      'Personal',
-      'Details',
-      'Confirmation',
+      'Personal Information',
+      'Contact Information',
+      'Summary',
     ]"
     @finish="handleFinish"
   >
 
-    <Step title="Personal">
-      <h3>Personal information</h3>
+    <Step title="Personal Information">
+      <h3>Personal Information</h3>
 
       <input
         type="text"
@@ -73,138 +65,72 @@ function handleFinish() {
       />
     </Step>
 
-    <Step title="Details">
-      <h3>Additional details</h3>
+    <Step title="Contact Information">
+      <h3>Contact Information</h3>
 
       <input
-        type="text"
-        placeholder="Phone number"
+        type="email"
+        placeholder="Email"
       />
     </Step>
 
-    <Step title="Confirmation">
-      <h3>Confirmation</h3>
+    <Step title="Summary">
+      <h3>Summary</h3>
 
-      <p>
-        Review your information before submitting.
-      </p>
+      <p>Your information is ready to submit.</p>
     </Step>
 
   </StepperWizard>
 </template>
+
+<script setup>
+function handleFinish() {
+  console.log('Form completed')
+}
+</script>
 ```
-
-That's all you need for a basic wizard.
-
-StepPerform automatically:
-
-* starts at Step 1
-* displays the current step
-* hides inactive steps
-* handles Next
-* handles Previous
-* detects the final step
-* emits `finish` when the wizard is completed
 
 ---
 
 # Per-Step Validation
 
-This is the recommended way to use validation with StepPerform.
+StepPerform does not provide its own validation library.
 
-Each `<Step>` can receive a `validate` function:
+Instead, each `<Step>` can receive a `validate` function.
 
 ```vue
 <Step
-  title="Personal"
+  title="Personal Information"
   :validate="validatePersonal"
 >
-  ...
+  <!-- fields -->
 </Step>
 ```
 
-The important concept is:
+The validator is executed when the user clicks **Next**.
 
-```text
-Step 1
-   ↓
-validatePersonal()
-   ↓
-valid?
- ┌───────┐
- │       │
- YES     NO
- │       │
- ▼       ▼
-Next    Stay
-```
+If the validator returns `false`, the wizard stays on the current step.
 
-When the user clicks **Next**, StepPerform calls the validator belonging to the current step.
+If it returns `true`, the wizard proceeds to the next step.
 
-If the validator returns:
-
-```js
-true
-```
-
-the wizard moves forward.
-
-If it returns:
-
-```js
-false
-```
-
-the wizard stays on the current step.
-
----
-
-# Simple Validation Example
-
-You don't need a validation library.
-
-For example:
+### Simple Example
 
 ```vue
 <script setup>
-import {
-  ref,
-} from 'vue'
-
-import {
-  StepperWizard,
-  Step,
-} from 'stepperform'
+import { ref } from 'vue'
 
 const firstName = ref('')
-const email = ref('')
 
 function validatePersonal() {
   return firstName.value.trim() !== ''
 }
-
-function validateContact() {
-  return email.value.includes('@')
-}
-
-function handleFinish() {
-  console.log('Wizard completed')
-}
 </script>
 
 <template>
-  <StepperWizard
-    :header-title="[
-      'Personal',
-      'Contact',
-      'Finish',
-    ]"
-    @finish="handleFinish"
-  >
+  <StepperWizard>
 
-    <!-- Step 1 -->
     <Step
-      title="Personal"
+      title="Personal Information"
       :validate="validatePersonal"
     >
       <input
@@ -214,402 +140,21 @@ function handleFinish() {
       />
     </Step>
 
-    <!-- Step 2 -->
-    <Step
-      title="Contact"
-      :validate="validateContact"
-    >
-      <input
-        v-model="email"
-        type="email"
-        placeholder="Email"
-      />
-    </Step>
-
-    <!-- Step 3 -->
-    <Step title="Finish">
-      <h3>Ready to submit</h3>
+    <Step title="Summary">
+      <p>Ready to submit.</p>
     </Step>
 
   </StepperWizard>
 </template>
 ```
-
-Now each step has its own validation:
-
-```js
-validatePersonal()
-```
-
-and:
-
-```js
-validateContact()
-```
-
-StepPerform only calls the validator. It does not know how your validation works.
-
----
-
-# Using VeeValidate
-
-StepPerform does **not** require VeeValidate.
-
-However, if your application already uses VeeValidate, you can easily connect it to each step.
-
-For example:
-
-```bash
-npm install vee-validate yup
-```
-
-Then create your schema:
-
-```js
-import * as yup from 'yup'
-
-const validationSchema = yup.object({
-  first_name: yup
-    .string()
-    .required('First name is required'),
-
-  middle_name: yup
-    .string()
-    .required('Middle name is required'),
-
-  last_name: yup
-    .string()
-    .required('Last name is required'),
-})
-```
-
-Use VeeValidate's `validateField()` for each step:
-
-```vue
-<Form
-  :validation-schema="validationSchema"
-  v-slot="{ validateField }"
->
-
-  <StepperWizard
-    :header-title="[
-      'First name',
-      'Middle name',
-      'Last name',
-    ]"
-  >
-
-    <Step
-      title="First name"
-      :validate="
-        () => validateField('first_name')
-      "
-    >
-      ...
-    </Step>
-
-    <Step
-      title="Middle name"
-      :validate="
-        () => validateField('middle_name')
-      "
-    >
-      ...
-    </Step>
-
-    <Step
-      title="Last name"
-      :validate="
-        () => validateField('last_name')
-      "
-    >
-      ...
-    </Step>
-
-  </StepperWizard>
-
-</Form>
-```
-
-### Why `validateField()`?
-
-Suppose you have three steps:
-
-```text
-Step 1 → first_name
-Step 2 → middle_name
-Step 3 → last_name
-```
-
-You generally don't want Step 1 to validate fields belonging to Steps 2 and 3.
-
-Instead of:
-
-```js
-validate()
-```
-
-which can validate the entire form, use:
-
-```js
-validateField('first_name')
-```
-
-for Step 1.
-
-Then:
-
-```js
-validateField('middle_name')
-```
-
-for Step 2.
-
-And:
-
-```js
-validateField('last_name')
-```
-
-for Step 3.
-
-This allows each step to control its own validation.
-
----
-
-# Complete VeeValidate Example
-
-Here is a complete example you can copy into your Vue application:
-
-```vue
-<script setup>
-import {
-  Form,
-  Field,
-  ErrorMessage,
-} from 'vee-validate'
-
-import * as yup from 'yup'
-
-import {
-  StepperWizard,
-  Step,
-} from 'stepperform'
-
-import 'stepperform/style.css'
-
-const validationSchema = yup.object({
-  first_name: yup
-    .string()
-    .required('First name is required'),
-
-  middle_name: yup
-    .string()
-    .required('Middle name is required'),
-
-  last_name: yup
-    .string()
-    .required('Last name is required'),
-})
-
-function handleFinish() {
-  console.log('Wizard completed')
-}
-</script>
-
-<template>
-  <Form
-    :validation-schema="validationSchema"
-    v-slot="{ validateField }"
-  >
-
-    <StepperWizard
-      :header-title="[
-        'First name',
-        'Middle name',
-        'Last name',
-      ]"
-      @finish="handleFinish"
-    >
-
-      <!-- STEP 1 -->
-
-      <Step
-        title="First name"
-        :validate="
-          () => validateField('first_name')
-        "
-      >
-
-        <div class="mb-3">
-
-          <label>
-            First name
-          </label>
-
-          <Field
-            name="first_name"
-            class="form-control"
-            placeholder="Enter first name"
-          />
-
-          <ErrorMessage
-            name="first_name"
-            class="text-danger"
-          />
-
-        </div>
-
-      </Step>
-
-      <!-- STEP 2 -->
-
-      <Step
-        title="Middle name"
-        :validate="
-          () => validateField('middle_name')
-        "
-      >
-
-        <div class="mb-3">
-
-          <label>
-            Middle name
-          </label>
-
-          <Field
-            name="middle_name"
-            class="form-control"
-            placeholder="Enter middle name"
-          />
-
-          <ErrorMessage
-            name="middle_name"
-            class="text-danger"
-          />
-
-        </div>
-
-      </Step>
-
-      <!-- STEP 3 -->
-
-      <Step
-        title="Last name"
-        :validate="
-          () => validateField('last_name')
-        "
-      >
-
-        <div class="mb-3">
-
-          <label>
-            Last name
-          </label>
-
-          <Field
-            name="last_name"
-            class="form-control"
-            placeholder="Enter last name"
-          />
-
-          <ErrorMessage
-            name="last_name"
-            class="text-danger"
-          />
-
-        </div>
-
-      </Step>
-
-    </StepperWizard>
-
-  </Form>
-</template>
-```
-
----
-
-# Multiple Fields in One Step
-
-A step can contain multiple fields.
-
-You can validate all fields belonging to that step inside one validator.
-
-For example:
-
-```js
-async function validatePersonal() {
-  const firstName = await validateField(
-    'first_name'
-  )
-
-  const middleName = await validateField(
-    'middle_name'
-  )
-
-  return (
-    firstName.valid &&
-    middleName.valid
-  )
-}
-```
-
-Then:
-
-```vue
-<Step
-  title="Personal"
-  :validate="validatePersonal"
->
-  ...
-</Step>
-```
-
-This gives you complete control over which fields belong to each step.
-
----
-
-# Async Validation
-
-Validation can also be asynchronous.
-
-For example, you may need to check an email address against your API:
-
-```js
-async function validateEmail() {
-  const validFormat =
-    email.value.includes('@')
-
-  if (!validFormat) {
-    return false
-  }
-
-  const response =
-    await checkEmailWithApi(email.value)
-
-  return response.valid
-}
-```
-
-Use it normally:
-
-```vue
-<Step
-  title="Email"
-  :validate="validateEmail"
->
-  ...
-</Step>
-```
-
-StepPerform waits for the validator before continuing.
 
 ---
 
 # Validation Return Values
 
-A validator can return a boolean:
+A step validator can return:
+
+### Boolean
 
 ```js
 function validateStep() {
@@ -625,164 +170,246 @@ function validateStep() {
 }
 ```
 
-It can also return an object containing `valid`:
+### Validation Object
+
+Validators can also return an object containing `valid`:
 
 ```js
-function validateStep() {
+async function validateStep() {
   return {
     valid: true,
   }
 }
 ```
 
-Async validators are supported:
+or:
 
 ```js
 async function validateStep() {
   return {
-    valid: await checkSomething(),
+    valid: false,
   }
 }
 ```
 
-The basic contract is:
-
-```text
-true
-  → continue
-
-false
-  → stay on current step
-
-{ valid: true }
-  → continue
-
-{ valid: false }
-  → stay on current step
-```
+StepPerform uses the `valid` property to determine whether the user can continue.
 
 ---
 
-# The Important Part: StepPerform Does Not Validate Your Form
+# Multiple Fields Per Step
 
-StepPerform does **not** contain:
+You can validate multiple fields with a single validator.
 
-```text
-Yup
-Zod
-VeeValidate
-Joi
+```vue
+<script setup>
+function validatePersonal() {
+  const firstNameValid =
+    firstName.value.trim() !== ''
+
+  const lastNameValid =
+    lastName.value.trim() !== ''
+
+  return firstNameValid && lastNameValid
+}
+</script>
 ```
 
-and it does not require any of them.
+Then:
 
-Instead, the responsibilities are separated:
-
-### Your application
-
-Handles:
-
-* form fields
-* form state
-* validation schema
-* validation messages
-* API requests
-* submission
-
-### StepPerform
-
-Handles:
-
-* current step
-* next / previous navigation
-* step visibility
-* progress
-* validation callback execution
-* finish event
-
-For example:
-
-```text
-Your validation
-      │
-      ▼
-validatePersonal()
-      │
-      ▼
-StepPerform
-      │
-      ├── true  → Next step
-      │
-      └── false → Stay here
+```vue
+<Step
+  title="Personal Information"
+  :validate="validatePersonal"
+>
+  <!-- multiple fields -->
+</Step>
 ```
 
-This allows StepPerform to work with virtually any validation strategy.
+This allows your application to keep complete control over how fields are validated.
 
 ---
 
-# Navigation Events
+# Async Validation
 
-## `change`
+Validators can be asynchronous.
 
-The `change` event is emitted whenever the current step changes.
+```vue
+<script setup>
+async function validateEmail() {
+  const available = await checkEmailAvailability()
+
+  return available
+}
+</script>
+```
+
+Use it normally:
+
+```vue
+<Step
+  title="Email"
+  :validate="validateEmail"
+>
+  <!-- email field -->
+</Step>
+```
+
+StepPerform waits for the Promise before deciding whether to continue.
+
+---
+
+# VeeValidate
+
+StepPerform does not depend on VeeValidate, but it works well with it.
+
+Install VeeValidate separately in your application:
+
+```bash
+npm install vee-validate
+```
+
+Then use VeeValidate's validation functions as the Step validator.
+
+```vue
+<script setup>
+import {
+  Form,
+  Field,
+  ErrorMessage,
+} from 'vee-validate'
+</script>
+
+<template>
+  <Form
+    v-slot="{ validateField }"
+  >
+    <StepperWizard
+      :header-title="[
+        'First Name',
+        'Middle Name',
+        'Last Name',
+      ]"
+      @finish="handleFinish"
+    >
+
+      <Step
+        title="First Name"
+        :validate="
+          () => validateField('first_name')
+        "
+      >
+        <Field
+          name="first_name"
+          class="form-control"
+        />
+
+        <ErrorMessage
+          name="first_name"
+        />
+      </Step>
+
+      <Step
+        title="Middle Name"
+        :validate="
+          () => validateField('middle_name')
+        "
+      >
+        <Field
+          name="middle_name"
+          class="form-control"
+        />
+
+        <ErrorMessage
+          name="middle_name"
+        />
+      </Step>
+
+      <Step
+        title="Last Name"
+        :validate="
+          () => validateField('last_name')
+        "
+      >
+        <Field
+          name="last_name"
+          class="form-control"
+        />
+
+        <ErrorMessage
+          name="last_name"
+        />
+      </Step>
+
+    </StepperWizard>
+  </Form>
+</template>
+```
+
+The important part is:
+
+```vue
+:validate="
+  () => validateField('first_name')
+"
+```
+
+StepPerform calls the function when the user attempts to continue.
+
+VeeValidate remains completely optional.
+
+---
+
+# Global Validation
+
+You can also provide a validator directly to `<StepperWizard>`.
 
 ```vue
 <StepperWizard
-  @change="handleChange"
+  :validate="validateStep"
 >
+  ...
+</StepperWizard>
 ```
 
+Example:
+
 ```js
-function handleChange(step) {
-  console.log('Current step:', step)
+async function validateStep() {
+  return true
 }
 ```
 
-The step number starts at `1`.
+However, **per-step validation is recommended** because it keeps each step's validation logic close to that step.
 
 ---
 
-## `finish`
+# StepperWizard Props
 
-The `finish` event is emitted when the user confirms the final step.
+## `header-title`
 
-```vue
-<StepperWizard
-  @finish="handleFinish"
->
-```
-
-```js
-function handleFinish() {
-  console.log('Submit your form here')
-}
-```
-
-A typical application might then submit its form:
-
-```js
-async function handleFinish() {
-  await submitForm()
-}
-```
-
----
-
-# Stepper Header
-
-You can provide labels for the header:
+Array of labels displayed in the stepper header.
 
 ```vue
 <StepperWizard
   :header-title="[
     'Personal',
-    'Address',
-    'Confirmation',
+    'Contact',
+    'Summary',
   ]"
 >
 ```
 
-To hide the header:
+Default:
+
+```js
+[]
+```
+
+---
+
+## `show-header`
+
+Controls whether the stepper header is displayed.
 
 ```vue
 <StepperWizard
@@ -790,23 +417,162 @@ To hide the header:
 >
 ```
 
----
-
-# Programmatic Stepper Control
-
-For applications that need direct stepper state, StepPerform also exports:
+Default:
 
 ```js
-useStepperForm
+true
+```
+
+---
+
+## `validate`
+
+Optional global validation function.
+
+```vue
+<StepperWizard
+  :validate="validateStep"
+>
+```
+
+Per-step `validate` functions take priority.
+
+---
+
+# Step Props
+
+## `title`
+
+The title associated with the step.
+
+```vue
+<Step title="Personal Information">
+  ...
+</Step>
+```
+
+## `validate`
+
+Optional validation function.
+
+```vue
+<Step
+  title="Personal Information"
+  :validate="validatePersonal"
+>
+  ...
+</Step>
+```
+
+The function can return:
+
+```js
+true
+```
+
+```js
+false
+```
+
+or:
+
+```js
+{
+  valid: true
+}
+```
+
+It can also return a Promise.
+
+---
+
+# Navigation Components
+
+StepPerform provides three navigation components.
+
+### StepNext
+
+```vue
+<StepNext
+  :action="next"
+/>
+```
+
+### StepPrevious
+
+```vue
+<StepPrevious
+  :action="previous"
+/>
+```
+
+### StepConfirm
+
+```vue
+<StepConfirm
+  :action="confirm"
+/>
+```
+
+In normal usage, `StepperWizard` handles these automatically.
+
+---
+
+# Events
+
+## `finish`
+
+Emitted when the user reaches the final step and confirms.
+
+```vue
+<StepperWizard
+  @finish="handleFinish"
+>
 ```
 
 Example:
 
 ```js
+function handleFinish() {
+  console.log('Wizard completed')
+}
+```
+
+---
+
+## `change`
+
+Emitted when the current step changes.
+
+```vue
+<StepperWizard
+  @change="handleStepChange"
+>
+```
+
+Example:
+
+```js
+function handleStepChange(step) {
+  console.log('Current step:', step)
+}
+```
+
+---
+
+# Programmatic Step Control
+
+StepPerform exposes the `useStepperForm` composable for applications that need direct control over the step state.
+
+```js
 import {
   useStepperForm,
 } from 'stepperform'
+```
 
+Example:
+
+```js
 const {
   step,
   total,
@@ -820,24 +586,63 @@ const {
 } = useStepperForm(3)
 ```
 
-Available methods:
+### Available methods
 
-| Method       | Description                |
-| ------------ | -------------------------- |
-| `next()`     | Move to the next step      |
-| `previous()` | Move to the previous step  |
-| `goTo(step)` | Jump to a specific step    |
-| `reset()`    | Return to the initial step |
+```js
+next()
+```
 
-Available state:
+Move to the next step.
 
-| Property      | Description                           |
-| ------------- | ------------------------------------- |
-| `step`        | Current step                          |
-| `total`       | Total number of steps                 |
-| `isFirstStep` | Whether the current step is the first |
-| `isLastStep`  | Whether the current step is the last  |
-| `progress`    | Current progress percentage           |
+```js
+previous()
+```
+
+Move to the previous step.
+
+```js
+goTo(2)
+```
+
+Move directly to step 2.
+
+```js
+reset()
+```
+
+Return to the initial step.
+
+### State
+
+```js
+step
+```
+
+Current step.
+
+```js
+total
+```
+
+Total number of steps.
+
+```js
+isFirstStep
+```
+
+Whether the current step is the first step.
+
+```js
+isLastStep
+```
+
+Whether the current step is the last step.
+
+```js
+progress
+```
+
+Current progress percentage.
 
 ---
 
@@ -847,8 +652,8 @@ StepPerform exports:
 
 ```js
 import {
-  StepperHeader,
   StepperWizard,
+  StepperHeader,
   Step,
   StepPrevious,
   StepNext,
@@ -857,39 +662,11 @@ import {
 } from 'stepperform'
 ```
 
-### `StepperWizard`
-
-Main wizard component.
-
-### `Step`
-
-Individual step container.
-
-### `StepperHeader`
-
-Displays the step progress header.
-
-### `StepPrevious`
-
-Previous navigation button.
-
-### `StepNext`
-
-Next navigation button.
-
-### `StepConfirm`
-
-Final confirmation button.
-
-### `useStepperForm`
-
-Composable for stepper state and navigation.
-
 ---
 
 # Global Registration
 
-You can register StepPerform as a Vue plugin.
+You can register StepPerform globally.
 
 ```js
 import {
@@ -909,16 +686,16 @@ app.use(StepPerform)
 app.mount('#app')
 ```
 
-After registration:
+After registration, you can use:
 
 ```vue
 <StepperWizard>
-  <Step title="Step 1">
-    Step 1
+  <Step title="First">
+    ...
   </Step>
 
-  <Step title="Step 2">
-    Step 2
+  <Step title="Second">
+    ...
   </Step>
 </StepperWizard>
 ```
@@ -927,13 +704,116 @@ After registration:
 
 # Styling
 
-Import the default stylesheet:
+StepPerform includes its own CSS.
+
+Import it once:
 
 ```js
 import 'stepperform/style.css'
 ```
 
-The default styles are intentionally lightweight and can be overridden by your application's CSS.
+StepPerform does **not** require:
+
+* Bootstrap
+* Bootstrap Icons
+* Tailwind CSS
+* Vuetify
+* another UI framework
+
+Your application can use any CSS framework or design system alongside StepPerform, but none is required.
+
+The package's built-in styles handle the stepper, navigation buttons, progress indicators, and responsive behavior.
+
+---
+
+# Forms and Validation
+
+StepPerform intentionally separates the wizard from form validation.
+
+### StepPerform handles
+
+* Step registration
+* Current step
+* Next/previous navigation
+* Progress
+* Step validation callbacks
+* Completion
+* Stepper header
+* Responsive stepper UI
+
+### Your application handles
+
+* Form fields
+* Form state
+* Validation schemas
+* Error messages
+* API requests
+* Submission
+* Form libraries
+
+This means you can use StepPerform with:
+
+* VeeValidate
+* Yup
+* Zod
+* custom validation
+* native HTML validation
+* other form libraries
+
+without StepPerform needing to depend on them.
+
+---
+
+# Example Project Structure
+
+A consuming application could look like:
+
+```text
+src/
+├── components/
+│   ├── Step1.vue
+│   ├── Step2.vue
+│   └── Step3.vue
+│
+├── composables/
+│   └── validation.js
+│
+└── views/
+    └── WizardForm.vue
+```
+
+Example:
+
+```vue
+<StepperWizard
+  :header-title="[
+    'Personal',
+    'Contact',
+    'Summary',
+  ]"
+  @finish="submitForm"
+>
+
+  <Step
+    title="Personal"
+    :validate="validatePersonal"
+  >
+    <Step1 />
+  </Step>
+
+  <Step
+    title="Contact"
+    :validate="validateContact"
+  >
+    <Step2 />
+  </Step>
+
+  <Step title="Summary">
+    <Step3 />
+  </Step>
+
+</StepperWizard>
+```
 
 ---
 
@@ -951,35 +831,35 @@ Install dependencies:
 npm install
 ```
 
-Run the development demo:
-
-```bash
-npm run dev
-```
-
-Build the library:
+Build the package:
 
 ```bash
 npm run build
+```
+
+Preview the build:
+
+```bash
+npm run preview
 ```
 
 ---
 
-# Test the npm Package Locally
+# Testing the npm Package Locally
 
-To test the actual package that will be published:
+Build the package:
 
 ```bash
 npm run build
 ```
 
-Then:
+Create a package archive:
 
 ```bash
 npm pack
 ```
 
-This creates:
+This creates a file similar to:
 
 ```text
 stepperform-1.0.0.tgz
@@ -991,35 +871,48 @@ Install that package into another Vue 3 application:
 npm install /path/to/stepperform-1.0.0.tgz
 ```
 
-Then import it normally:
+Then test the package exactly as an npm consumer would.
 
-```js
-import {
-  StepperWizard,
-  Step,
-} from 'stepperform'
+---
 
-import 'stepperform/style.css'
+# Package Contents
+
+The published package contains the compiled distribution:
+
+```text
+stepperform/
+├── dist/
+│   ├── stepperform.css
+│   ├── stepperform.js
+│   └── stepperform.umd.cjs
+├── LICENSE
+├── README.md
+└── package.json
 ```
 
-This verifies the **built npm package**, rather than only the development source.
+Source files and development dependencies are not included in the published package.
 
 ---
 
 # Vue Compatibility
 
-StepPerform requires:
+StepPerform is designed for:
 
 ```text
-Vue 3.3+
+Vue 3
 ```
 
-Vue is provided as a peer dependency.
+Vue is declared as a peer dependency so the consuming application provides its own Vue installation.
 
 ---
 
 # License
 
-MIT License
+MIT License.
 
-Copyright © 2026 malaly
+Copyright (c) 2026 malaly
+
+```
+
+This version now clearly states that **Bootstrap is not required**, documents **per-step validation as the recommended approach**, and explains the separation between StepPerform and validation libraries.
+```

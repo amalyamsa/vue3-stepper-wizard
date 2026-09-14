@@ -51,6 +51,6 @@
     "vue": "^3.5.40"
   },
   "dependencies": {
-    "bootstrap": "^5.3.8"
+    "vee-validate": "^4.15.1"
   }
 }

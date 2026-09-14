@@ -16,11 +16,11 @@ const {
 </script>
 
 <template>
-  <h5 class="mb-3">2: Step2 Information</h5>
+  <h5 class="step-title">2: Step2 Information</h5>
 
   <!-- Full Name -->
-  <div class="row g-3">
-    <div class="col-12 col-md-6">
+  <div class="form-grid">
+    <div class="form-field">
       <label class="form-label">Phone Number</label>
       <Field
         name="phone_number"
@@ -33,7 +33,7 @@ const {
       />
       <ErrorMessage name="phone_number" class="text-danger small" />
     </div>
-    <div class="col-12 col-md-6">
+    <div class="form-field">
       <label class="form-label">Email Address</label>
       <Field
         name="email"
@@ -45,9 +45,6 @@ const {
       />
       <ErrorMessage name="email" class="text-danger small" />
     </div>
-
   </div>
-
-
 </template>
 
